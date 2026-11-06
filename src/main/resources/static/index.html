@@ -1,0 +1,604 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Safety Management System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        header {
+            background: #0f172a;
+            color: white;
+            padding: 22px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 27px;
+        }
+
+        header p {
+            margin-top: 8px;
+            color: #cbd5e1;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.07);
+        }
+
+        h2 {
+            margin-bottom: 18px;
+            color: #0f172a;
+        }
+
+        .upload-box {
+            border: 2px dashed #94a3b8;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        input[type="file"] {
+            margin: 18px 0;
+            max-width: 100%;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 13px 25px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        #preview {
+            display: none;
+            width: 100%;
+            max-height: 350px;
+            object-fit: contain;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        #message {
+            margin-top: 18px;
+            font-weight: bold;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            background: #f1f5f9;
+            padding: 22px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .result-item h3 {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .result-item p {
+            font-size: 25px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .GOOD {
+            color: #16a34a;
+        }
+
+        .FAIR {
+            color: #d97706;
+        }
+
+        .POOR {
+            color: #dc2626;
+        }
+
+        .image-comparison {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .image-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .image-box h3 {
+            margin-bottom: 12px;
+            color: #334155;
+        }
+
+        .image-box img {
+            width: 100%;
+            max-height: 320px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .image-note {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 10px;
+        }
+
+        .history-item {
+            padding: 18px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .history-item img {
+            width: 100%;
+            max-width: 350px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .history-item p {
+            margin-top: 12px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #0f172a;
+            color: white;
+        }
+
+        @media(max-width: 600px) {
+            header h1 {
+                font-size: 21px;
+            }
+
+            main {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .image-comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <h1>Road Safety Management System</h1>
+        <p>Road Condition Analysis Using Java, Spring Boot and OpenCV</p>
+    </header>
+
+    <main>
+
+        <!-- DASHBOARD -->
+        <section class="card">
+            <h2>Road Inspection Dashboard</h2>
+
+            <div class="result-grid">
+
+                <div class="result-item">
+                    <h3>Total Inspections</h3>
+                    <p id="totalInspections">0</p>
+                </div>
+
+                <div class="result-item">
+                    <h3>GOOD Roads</h3>
+                    <p id="goodRoads" class="GOOD">0</p>
+                </div>
+
+                <div class="result-item">
+                    <h3>FAIR Roads</h3>
+                    <p id="fairRoads" class="FAIR">0</p>
+                </div>
+
+                <div class="result-item">
+                    <h3>POOR Roads</h3>
+                    <p id="poorRoads" class="POOR">0</p>
+                </div>
+
+            </div>
+
+            <button onclick="loadDashboardStats()">
+                Refresh Dashboard
+            </button>
+        </section>
+
+        <!-- IMAGE UPLOAD -->
+        <section class="card">
+            <h2>Upload Road Image</h2>
+
+            <div class="upload-box">
+
+                <p>Select a road image to analyze its condition.</p>
+
+                <input type="file"
+                       id="imageInput"
+                       accept="image/jpeg,image/png,image/webp">
+
+                <br>
+
+                <button id="analyzeBtn" onclick="uploadImage()">
+                    Analyze Road
+                </button>
+
+                <img id="preview" alt="Original road image preview">
+
+                <p id="message"></p>
+
+            </div>
+        </section>
+
+        <!-- ANALYSIS RESULT -->
+        <section class="card" id="resultSection" style="display:none;">
+
+            <h2>Road Analysis Result</h2>
+
+            <div class="result-grid">
+
+                <div class="result-item">
+                    <h3>Inspection ID</h3>
+                    <p id="inspectionId">-</p>
+                </div>
+
+                <div class="result-item">
+                    <h3>Damage Percentage</h3>
+                    <p id="damagePercentage">-</p>
+                </div>
+
+                <div class="result-item">
+                    <h3>Road Condition</h3>
+                    <p id="condition">-</p>
+                </div>
+
+                <div class="result-item">
+                    <h3>Detected Regions</h3>
+                    <p id="detectedRegions">-</p>
+                </div>
+
+            </div>
+
+            <p id="inspectionDate" style="margin-top:20px;"></p>
+
+            <!-- ORIGINAL AND PROCESSED IMAGE -->
+            <div class="image-comparison">
+
+                <div class="image-box">
+                    <h3>Original Road Image</h3>
+                    <img id="originalResultImage" alt="Original road image">
+                    <p class="image-note">Uploaded image without modifications</p>
+                </div>
+
+                <div class="image-box">
+                    <h3>Processed Road Image</h3>
+                    <img id="processedResultImage" alt="Processed road image with detection rectangles">
+                    <p class="image-note">Red rectangles indicate potential detected regions</p>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- INSPECTION HISTORY -->
+        <section class="card">
+
+            <h2>Previous Inspections</h2>
+
+            <button onclick="loadHistory()">
+                Refresh History
+            </button>
+
+            <div id="history" style="margin-top:20px;">
+                Loading inspection history...
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>Road Safety Management System | Java Spring Boot Project</p>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script>
+
+        const imageInput = document.getElementById("imageInput");
+        const preview = document.getElementById("preview");
+
+        // IMAGE PREVIEW
+        imageInput.addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            document.getElementById("resultSection").style.display = "none";
+            document.getElementById("message").textContent = "";
+
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = "block";
+            } else {
+                preview.style.display = "none";
+            }
+
+        });
+
+
+        // UPLOAD AND ANALYZE IMAGE
+        async function uploadImage() {
+
+            const file = imageInput.files[0];
+
+            const message = document.getElementById("message");
+
+            const button = document.getElementById("analyzeBtn");
+
+            if (!file) {
+                message.textContent = "Please select a road image first.";
+                message.style.color = "red";
+                return;
+            }
+
+            if (!file.type.startsWith("image/")) {
+                message.textContent = "Please select a valid image.";
+                message.style.color = "red";
+                return;
+            }
+
+            const formData = new FormData();
+
+            formData.append("image", file);
+
+            button.disabled = true;
+            button.textContent = "Analyzing...";
+
+            message.textContent = "Uploading and processing image...";
+            message.style.color = "#2563eb";
+
+            try {
+
+                const response = await fetch("/api/upload", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(
+                        data.message || "Image processing failed."
+                    );
+                }
+
+                // Display result section
+                document.getElementById("resultSection").style.display = "block";
+
+                document.getElementById("inspectionId").textContent =
+                    data.inspectionId ?? "-";
+
+                document.getElementById("damagePercentage").textContent =
+                    data.damagePercentage + "%";
+
+                const conditionElement =
+                    document.getElementById("condition");
+
+                conditionElement.textContent = data.condition;
+
+                conditionElement.className = data.condition;
+
+                document.getElementById("detectedRegions").textContent =
+                    data.detectedRegions ?? "-";
+
+                document.getElementById("inspectionDate").textContent =
+                    "Inspection Date: " + (data.inspectionDate ?? "-");
+
+                // Display original image
+                document.getElementById("originalResultImage").src =
+                    "/api/images/" + encodeURIComponent(data.imageName);
+
+                // Display processed image with red rectangles
+                if (data.processedImageName) {
+
+                    document.getElementById("processedResultImage").src =
+                        "/api/images/" +
+                        encodeURIComponent(data.processedImageName) +
+                        "?t=" + Date.now();
+
+                } else {
+
+                    document.getElementById("processedResultImage").removeAttribute("src");
+
+                }
+
+                message.textContent =
+                    "Image analyzed and inspection saved successfully!";
+
+                message.style.color = "green";
+
+                // Refresh dashboard and history
+                await loadDashboardStats();
+                await loadHistory();
+
+            } catch (error) {
+
+                message.textContent = error.message;
+                message.style.color = "red";
+
+            } finally {
+
+                button.disabled = false;
+                button.textContent = "Analyze Road";
+
+            }
+
+        }
+
+
+        // LOAD INSPECTION HISTORY
+        async function loadHistory() {
+
+            const history = document.getElementById("history");
+
+            history.textContent = "Loading inspection history...";
+
+            try {
+
+                const response = await fetch("/api/inspections");
+
+                if (!response.ok) {
+                    throw new Error("Unable to load history.");
+                }
+
+                const records = await response.json();
+
+                history.replaceChildren();
+
+                if (records.length === 0) {
+                    history.textContent = "No inspections available.";
+                    return;
+                }
+
+                records.forEach(record => {
+
+                    const card = document.createElement("div");
+
+                    card.className = "history-item";
+
+                    const image = document.createElement("img");
+
+                    image.src = "/api/images/" +
+                        encodeURIComponent(record.imageName);
+
+                    image.alt = "Original road inspection image";
+
+                    const details = document.createElement("p");
+
+                    details.textContent =
+                        "Inspection ID: " + record.id +
+                        " | Condition: " + record.condition +
+                        " | Damage: " + record.damagePercentage + "%" +
+                        " | Date: " + record.inspectionDate;
+
+                    card.appendChild(image);
+                    card.appendChild(details);
+
+                    history.appendChild(card);
+
+                });
+
+            } catch (error) {
+
+                history.textContent = error.message;
+
+            }
+
+        }
+
+
+        // LOAD DASHBOARD STATISTICS
+        async function loadDashboardStats() {
+
+            try {
+
+                const response = await fetch("/api/dashboard/stats");
+
+                if (!response.ok) {
+                    throw new Error("Unable to load dashboard statistics.");
+                }
+
+                const data = await response.json();
+
+                document.getElementById("totalInspections").textContent =
+                    data.totalInspections;
+
+                document.getElementById("goodRoads").textContent =
+                    data.goodRoads;
+
+                document.getElementById("fairRoads").textContent =
+                    data.fairRoads;
+
+                document.getElementById("poorRoads").textContent =
+                    data.poorRoads;
+
+            } catch (error) {
+
+                console.error("Dashboard Error:", error);
+
+            }
+
+        }
+
+
+        // LOAD DATA WHEN PAGE OPENS
+        document.addEventListener("DOMContentLoaded", function () {
+
+            loadDashboardStats();
+
+            loadHistory();
+
+        });
+
+    </script>
+
+</body>
+</html>
